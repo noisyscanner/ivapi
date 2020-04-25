@@ -1,0 +1,6 @@
+Driver mysql
+Host 172.17.64.1
+User ivapi
+Pass iverbs
+Port 3306
+Db ivapi
