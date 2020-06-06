@@ -1,10 +1,11 @@
 package main
 
 import (
+	"log"
+
+	"bradreed.co.uk/iverbs/api/cache"
 	iverbs_http "bradreed.co.uk/iverbs/api/http"
 	gofly "bradreed.co.uk/iverbs/gofly/gofly"
-	"fmt"
-	"log"
 )
 
 func connect(opts *Options) (fetcher *gofly.Fetcher, err error) {
@@ -26,13 +27,18 @@ func main() {
 
 	fetcher, err := connect(opts)
 	if err != nil {
-		fmt.Printf("%s", err)
+		log.Fatal(err)
 		return
 	}
 
+	cacheProvider := &cache.FileCacheProvider{
+		RootDirectory: "../gofly/langcache",
+	}
+
 	server := &iverbs_http.Server{
-		Port:    opts.Port,
-		Fetcher: fetcher,
+		Port:          opts.Port,
+		Fetcher:       fetcher,
+		CacheProvider: cacheProvider,
 	}
 
 	log.Fatal(server.Start())
