@@ -5,10 +5,11 @@ import (
 
 	"bradreed.co.uk/iverbs/api/cache"
 	iverbs_http "bradreed.co.uk/iverbs/api/http"
+	"bradreed.co.uk/iverbs/api/options"
 	gofly "bradreed.co.uk/iverbs/gofly/gofly"
 )
 
-func connect(opts *Options) (fetcher *gofly.Fetcher, err error) {
+func connect(opts *options.Options) (fetcher *gofly.Fetcher, err error) {
 	configService := gofly.FileConfigService{File: opts.Config}
 	dbs := gofly.DatabaseService{ConfigService: configService}
 
@@ -23,7 +24,7 @@ func connect(opts *Options) (fetcher *gofly.Fetcher, err error) {
 }
 
 func main() {
-	opts := getOpts()
+	opts := options.GetOpts()
 
 	fetcher, err := connect(opts)
 	if err != nil {
@@ -33,6 +34,12 @@ func main() {
 
 	cacheProvider := &cache.FileCacheProvider{
 		RootDirectory: "../gofly/langcache",
+	}
+
+	// err, redisTokenValidator := tokens.NewRedisTokenValidator()
+	if err != nil {
+		log.Fatal(err)
+		return
 	}
 
 	server := &iverbs_http.Server{
