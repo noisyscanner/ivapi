@@ -8,8 +8,6 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-const KEY = "iverbs"
-
 var _ = Describe("Tokens", func() {
 	var _ = Describe("RedisTokenValidator", func() {
 		var conn *MockRedisConn
@@ -40,7 +38,7 @@ var _ = Describe("Tokens", func() {
 				conn.On("Do", "HGET", KEY, token).Return(malformedExpiry, nil)
 
 				isValid, err := redisTokenValidator.Validate(token)
-				Expect(err).To(Equal(fmt.Errorf("%v not a string", malformedExpiry)))
+				Expect(err).NotTo(BeNil())
 				Expect(isValid).To(BeFalse())
 			})
 

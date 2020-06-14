@@ -26,7 +26,7 @@ func handlePanic(w http.ResponseWriter, r *http.Request, err interface{}) {
 	handleResponse(w, response)
 }
 
-func route(handler httprouter.Handle) httprouter.Handle {
+func jsonRoute(handler httprouter.Handle) httprouter.Handle {
 	return func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 		header := w.Header()
 		header.Set("Content-type", "application/json")

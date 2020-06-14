@@ -6,7 +6,9 @@ import (
 	"bradreed.co.uk/iverbs/api/cache"
 	iverbs_http "bradreed.co.uk/iverbs/api/http"
 	"bradreed.co.uk/iverbs/api/options"
+	"bradreed.co.uk/iverbs/api/tokens"
 	gofly "bradreed.co.uk/iverbs/gofly/gofly"
+	"github.com/gomodule/redigo/redis"
 )
 
 func connect(opts *options.Options) (fetcher *gofly.Fetcher, err error) {
@@ -21,6 +23,10 @@ func connect(opts *options.Options) (fetcher *gofly.Fetcher, err error) {
 	fetcher = &gofly.Fetcher{Db: db}
 
 	return
+}
+
+func connectToRedis(options *options.Options) (redis.Conn, error) {
+	return redis.Dial("tcp", options.Redis)
 }
 
 func main() {
@@ -42,10 +48,21 @@ func main() {
 		return
 	}
 
+	redisConn, err := connectToRedis(opts)
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+
+	tokenPersister := tokens.NewRedisTokenPersister(redisConn)
+	tokenValidator := tokens.NewRedisTokenValidator(redisConn)
+
 	server := &iverbs_http.Server{
-		Port:          opts.Port,
-		Fetcher:       fetcher,
-		CacheProvider: cacheProvider,
+		Port:           opts.Port,
+		Fetcher:        fetcher,
+		CacheProvider:  cacheProvider,
+		TokenPersister: tokenPersister,
+		TokenValidator: tokenValidator,
 	}
 
 	log.Fatal(server.Start())

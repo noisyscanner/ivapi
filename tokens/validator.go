@@ -1,10 +1,8 @@
 package tokens
 
 import (
-	"fmt"
 	"time"
 
-	"bradreed.co.uk/iverbs/api/options"
 	"github.com/gomodule/redigo/redis"
 )
 
@@ -19,34 +17,24 @@ type RedisTokenValidator struct {
 	key  string
 }
 
-// TODO: Test
-func NewRedisTokenValidator(options options.Options) (*RedisTokenValidator, error) {
-	// TODO: in OptionProvider
-	conn, err := redis.Dial("tcp", options.Redis)
-	if err != nil {
-		return nil, err
+func NewRedisTokenValidator(conn redis.Conn) *RedisTokenValidator {
+	return &RedisTokenValidator{
+		conn: conn,
+		key:  KEY, // TODO: In config?
 	}
-
-	return &RedisTokenValidator{conn: conn}, err
 }
 
 func (v *RedisTokenValidator) Validate(token string) (bool, error) {
-	expiry, err := v.conn.Do("HGET", v.key, token)
+	expiry, err := redis.String(v.conn.Do("HGET", v.key, token))
 	if err != nil {
+		// TODO: Test
+		if err == redis.ErrNil {
+			err = nil
+		}
 		return false, err
 	}
 
-	// TODO: Handle nil token
-
-	var (
-		expiryStr string
-		ok        bool
-	)
-	if expiryStr, ok = expiry.(string); !ok {
-		return false, fmt.Errorf("%v not a string", expiry)
-	}
-
-	expiryTime, err := time.Parse(FORMAT, expiryStr)
+	expiryTime, err := time.Parse(FORMAT, expiry)
 	if err != nil {
 		return false, err
 	}

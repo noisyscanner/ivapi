@@ -18,7 +18,80 @@ var (
 	_ easyjson.Marshaler
 )
 
-func easyjson6a975c40DecodeBradreedCoUkIverbsApiHttp(in *jlexer.Lexer, out *LanguagesResponse) {
+func easyjson6a975c40DecodeBradreedCoUkIverbsApiHttp(in *jlexer.Lexer, out *TokenResponse) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		if isTopLevel {
+			in.Consumed()
+		}
+		in.Skip()
+		return
+	}
+	in.Delim('{')
+	for !in.IsDelim('}') {
+		key := in.UnsafeString()
+		in.WantColon()
+		if in.IsNull() {
+			in.Skip()
+			in.WantComma()
+			continue
+		}
+		switch key {
+		case "token":
+			out.Token = string(in.String())
+		case "error":
+			out.Error = string(in.String())
+		default:
+			in.SkipRecursive()
+		}
+		in.WantComma()
+	}
+	in.Delim('}')
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjson6a975c40EncodeBradreedCoUkIverbsApiHttp(out *jwriter.Writer, in TokenResponse) {
+	out.RawByte('{')
+	first := true
+	_ = first
+	{
+		const prefix string = ",\"token\":"
+		out.RawString(prefix[1:])
+		out.String(string(in.Token))
+	}
+	if in.Error != "" {
+		const prefix string = ",\"error\":"
+		out.RawString(prefix)
+		out.String(string(in.Error))
+	}
+	out.RawByte('}')
+}
+
+// MarshalJSON supports json.Marshaler interface
+func (v TokenResponse) MarshalJSON() ([]byte, error) {
+	w := jwriter.Writer{}
+	easyjson6a975c40EncodeBradreedCoUkIverbsApiHttp(&w, v)
+	return w.Buffer.BuildBytes(), w.Error
+}
+
+// MarshalEasyJSON supports easyjson.Marshaler interface
+func (v TokenResponse) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjson6a975c40EncodeBradreedCoUkIverbsApiHttp(w, v)
+}
+
+// UnmarshalJSON supports json.Unmarshaler interface
+func (v *TokenResponse) UnmarshalJSON(data []byte) error {
+	r := jlexer.Lexer{Data: data}
+	easyjson6a975c40DecodeBradreedCoUkIverbsApiHttp(&r, v)
+	return r.Error()
+}
+
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
+func (v *TokenResponse) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjson6a975c40DecodeBradreedCoUkIverbsApiHttp(l, v)
+}
+func easyjson6a975c40DecodeBradreedCoUkIverbsApiHttp1(in *jlexer.Lexer, out *LanguagesResponse) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -82,7 +155,7 @@ func easyjson6a975c40DecodeBradreedCoUkIverbsApiHttp(in *jlexer.Lexer, out *Lang
 		in.Consumed()
 	}
 }
-func easyjson6a975c40EncodeBradreedCoUkIverbsApiHttp(out *jwriter.Writer, in LanguagesResponse) {
+func easyjson6a975c40EncodeBradreedCoUkIverbsApiHttp1(out *jwriter.Writer, in LanguagesResponse) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -117,23 +190,23 @@ func easyjson6a975c40EncodeBradreedCoUkIverbsApiHttp(out *jwriter.Writer, in Lan
 // MarshalJSON supports json.Marshaler interface
 func (v LanguagesResponse) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	easyjson6a975c40EncodeBradreedCoUkIverbsApiHttp(&w, v)
+	easyjson6a975c40EncodeBradreedCoUkIverbsApiHttp1(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v LanguagesResponse) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjson6a975c40EncodeBradreedCoUkIverbsApiHttp(w, v)
+	easyjson6a975c40EncodeBradreedCoUkIverbsApiHttp1(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *LanguagesResponse) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	easyjson6a975c40DecodeBradreedCoUkIverbsApiHttp(&r, v)
+	easyjson6a975c40DecodeBradreedCoUkIverbsApiHttp1(&r, v)
 	return r.Error()
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *LanguagesResponse) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjson6a975c40DecodeBradreedCoUkIverbsApiHttp(l, v)
+	easyjson6a975c40DecodeBradreedCoUkIverbsApiHttp1(l, v)
 }

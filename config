@@ -1,5 +1,5 @@
 Driver mysql
-Host 172.17.64.1
+Host 172.30.48.1
 User ivapi
 Pass iverbs
 Port 3306
