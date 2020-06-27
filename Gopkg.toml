@@ -40,3 +40,7 @@ ignored = ["bradreed.co.uk/iverbs/gofly/gofly"]
 [[constraint]]
   branch = "master"
   name = "github.com/dimonomid/clock"
+
+[[constraint]]
+  name = "github.com/cosmtrek/air"
+  version = "1.12.1"
