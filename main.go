@@ -2,17 +2,42 @@ package main
 
 import (
 	"log"
+	"os"
+	"strconv"
 
 	"bradreed.co.uk/iverbs/api/cache"
 	iverbs_http "bradreed.co.uk/iverbs/api/http"
 	"bradreed.co.uk/iverbs/api/options"
 	"bradreed.co.uk/iverbs/api/tokens"
-	gofly "bradreed.co.uk/iverbs/gofly/gofly"
 	"github.com/gomodule/redigo/redis"
+	gofly "github.com/noisyscanner/gofly/gofly"
 )
 
+type EnvConfigService struct{}
+
+func getEnvElse(varName string, fallback string) string {
+	envVar := os.Getenv(varName)
+	if envVar != "" {
+		return envVar
+	}
+
+	return fallback
+}
+
+func (_ *EnvConfigService) GetConfig() *gofly.DBConfig {
+	port, _ := strconv.Atoi(getEnvElse("DB_PORT", "3306"))
+	return &gofly.DBConfig{
+		Driver: getEnvElse("DB_DRIVER", "mysql"),
+		Host:   getEnvElse("DB_HOST", "localhost"),
+		User:   getEnvElse("DB_USER", "root"),
+		Pass:   getEnvElse("DB_PASS", ""),
+		Port:   port,
+		Db:     getEnvElse("DB_NAME", "iverbs"),
+	}
+}
+
 func connect(opts *options.Options) (fetcher *gofly.Fetcher, err error) {
-	configService := gofly.FileConfigService{File: opts.Config}
+	configService := &EnvConfigService{}
 	dbs := gofly.DatabaseService{ConfigService: configService}
 
 	db, err := dbs.GetDb()

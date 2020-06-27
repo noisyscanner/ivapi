@@ -2,18 +2,6 @@
 
 
 [[projects]]
-  name = "github.com/cosmtrek/air"
-  packages = [".","runner"]
-  revision = "6babe4a922ba23d6d2a6713f6688a14e73b3141c"
-  version = "v1.12.1"
-
-[[projects]]
-  name = "github.com/creack/pty"
-  packages = ["."]
-  revision = "2a38352e8b4d7ab6c336eef107e42a55e72e7fbc"
-  version = "v1.1.11"
-
-[[projects]]
   name = "github.com/davecgh/go-spew"
   packages = ["spew"]
   revision = "8991bc29aa16c548c550c7ff78260e27b9ab7c73"
@@ -26,28 +14,22 @@
   revision = "8d1048cafc4d6c8e8087c3e1c8bddf361331bfa5"
 
 [[projects]]
-  name = "github.com/fatih/color"
-  packages = ["."]
-  revision = "daf2830f2741ebb735b21709a520c5f37d642d85"
-  version = "v1.9.0"
-
-[[projects]]
   name = "github.com/fsnotify/fsnotify"
   packages = ["."]
   revision = "45d7d09e39ef4ac08d493309fa031790c15bfe8a"
   version = "v1.4.9"
 
 [[projects]]
+  name = "github.com/go-sql-driver/mysql"
+  packages = ["."]
+  revision = "17ef3dd9d98b69acec3e85878995ada9533a9370"
+  version = "v1.5.0"
+
+[[projects]]
   name = "github.com/gomodule/redigo"
   packages = ["internal","redis"]
   revision = "9c11da706d9b7902c6da69c592f75637793fe121"
   version = "v2.0.0"
-
-[[projects]]
-  name = "github.com/imdario/mergo"
-  packages = ["."]
-  revision = "66f88b4ae75f5edcc556623b96ff32c06360fbb7"
-  version = "v0.3.9"
 
 [[projects]]
   name = "github.com/julienschmidt/httprouter"
@@ -62,16 +44,10 @@
   version = "v0.7.1"
 
 [[projects]]
-  name = "github.com/mattn/go-colorable"
-  packages = ["."]
-  revision = "68e95eba382c972aafde02ead2cd2426a8a92480"
-  version = "v0.1.6"
-
-[[projects]]
-  name = "github.com/mattn/go-isatty"
-  packages = ["."]
-  revision = "7b513a986450394f7bbf1476909911b3aa3a55ce"
-  version = "v0.0.12"
+  branch = "master"
+  name = "github.com/noisyscanner/gofly"
+  packages = ["gofly"]
+  revision = "9cefaddc03752648c83b0323b5ae373676dda9ad"
 
 [[projects]]
   name = "github.com/nxadm/tail"
@@ -90,12 +66,6 @@
   packages = [".","format","internal/assertion","internal/asyncassertion","internal/oraclematcher","internal/testingtsupport","matchers","matchers/support/goraph/bipartitegraph","matchers/support/goraph/edge","matchers/support/goraph/node","matchers/support/goraph/util","types"]
   revision = "904ac6ab26e9a888bdff3467eea03b6122a1c027"
   version = "v1.10.1"
-
-[[projects]]
-  name = "github.com/pelletier/go-toml"
-  packages = ["."]
-  revision = "16c9a8bdc086a2130a88eff98df4088e4c359bb2"
-  version = "v1.8.0"
 
 [[projects]]
   name = "github.com/pmezard/go-difflib"
@@ -160,6 +130,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "867e014a9d8a9f38f7c6c5c4b36fe9f951fbd40c4c77ace1d0c3b80ef1ad259f"
+  inputs-digest = "9f6155a85eb0367ae8b231cf7c3bf0d248db472fe33d8123de0bba3958463828"
   solver-name = "gps-cdcl"
   solver-version = 1

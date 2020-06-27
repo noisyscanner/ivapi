@@ -1,7 +1,7 @@
 package http
 
 import (
-	gofly "bradreed.co.uk/iverbs/gofly/gofly"
+	gofly "github.com/noisyscanner/gofly/gofly"
 )
 
 type LanguagesResponse struct {

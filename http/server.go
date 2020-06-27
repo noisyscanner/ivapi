@@ -7,8 +7,8 @@ import (
 
 	"bradreed.co.uk/iverbs/api/cache"
 	"bradreed.co.uk/iverbs/api/tokens"
-	gofly "bradreed.co.uk/iverbs/gofly/gofly"
 	"github.com/julienschmidt/httprouter"
+	gofly "github.com/noisyscanner/gofly/gofly"
 )
 
 type Server struct {

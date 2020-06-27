@@ -3,11 +3,11 @@
 package http
 
 import (
-	gofly "bradreed.co.uk/iverbs/gofly/gofly"
 	json "encoding/json"
 	easyjson "github.com/mailru/easyjson"
 	jlexer "github.com/mailru/easyjson/jlexer"
 	jwriter "github.com/mailru/easyjson/jwriter"
+	gofly "github.com/noisyscanner/gofly/gofly"
 )
 
 // suppress unused package warning
@@ -134,9 +134,7 @@ func easyjson6a975c40DecodeBradreedCoUkIverbsApiHttp1(in *jlexer.Lexer, out *Lan
 						if v1 == nil {
 							v1 = new(gofly.Language)
 						}
-						if data := in.Raw(); in.Ok() {
-							in.AddError((*v1).UnmarshalJSON(data))
-						}
+						(*v1).UnmarshalEasyJSON(in)
 					}
 					out.Data = append(out.Data, v1)
 					in.WantComma()
@@ -173,7 +171,7 @@ func easyjson6a975c40EncodeBradreedCoUkIverbsApiHttp1(out *jwriter.Writer, in La
 				if v3 == nil {
 					out.RawString("null")
 				} else {
-					out.Raw((*v3).MarshalJSON())
+					(*v3).MarshalEasyJSON(out)
 				}
 			}
 			out.RawByte(']')

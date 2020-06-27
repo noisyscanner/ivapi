@@ -1,23 +1,23 @@
 package options
 
-import "flag"
+import (
+	"os"
+	"strconv"
+)
 
 type Options struct {
-	Port   int
-	Config string
-	Redis  string
+	Port  int
+	Redis string
 }
 
 func GetOpts() *Options {
-	port := flag.Int("port", 7000, "Port for http to listen on")
-	config := flag.String("config", "config", "DB config file")
-	redis := flag.String("redis", "localhost:6379", "Redis host and port")
-
-	flag.Parse()
+	port, err := strconv.Atoi(os.Getenv("PORT"))
+	if err != nil {
+		panic(err)
+	}
 
 	return &Options{
-		Port:   *port,
-		Config: *config,
-		Redis:  *redis,
+		Port:  port,
+		Redis: os.Getenv("REDIS"),
 	}
 }

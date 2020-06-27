@@ -4,8 +4,8 @@ import (
 	"log"
 	"net/http"
 
-	gofly "bradreed.co.uk/iverbs/gofly/gofly"
 	"github.com/julienschmidt/httprouter"
+	gofly "github.com/noisyscanner/gofly/gofly"
 )
 
 func getLanguages(fetcher *gofly.Fetcher) httprouter.Handle {
@@ -21,4 +21,3 @@ func getLanguages(fetcher *gofly.Fetcher) httprouter.Handle {
 		handleResponse(w, response)
 	})
 }
-
