@@ -26,6 +26,12 @@
   version = "v1.5.0"
 
 [[projects]]
+  name = "github.com/golang-migrate/migrate"
+  packages = [".","database","database/mysql","source","source/file"]
+  revision = "4937cd088f7c7193ee59b319c1c2caa7482aae8e"
+  version = "v3.5.4"
+
+[[projects]]
   name = "github.com/gomodule/redigo"
   packages = ["internal","redis"]
   revision = "9c11da706d9b7902c6da69c592f75637793fe121"
@@ -46,8 +52,8 @@
 [[projects]]
   branch = "master"
   name = "github.com/noisyscanner/gofly"
-  packages = ["gofly"]
-  revision = "9cefaddc03752648c83b0323b5ae373676dda9ad"
+  packages = ["gofly","migrate"]
+  revision = "a9abb6426f192b3837175fcda3dbe688e3b4301e"
 
 [[projects]]
   name = "github.com/nxadm/tail"
@@ -58,8 +64,8 @@
 [[projects]]
   name = "github.com/onsi/ginkgo"
   packages = [".","config","internal/codelocation","internal/containernode","internal/failer","internal/global","internal/leafnodes","internal/remote","internal/spec","internal/spec_iterator","internal/specrunner","internal/suite","internal/testingtproxy","internal/writer","reporters","reporters/stenographer","reporters/stenographer/support/go-colorable","reporters/stenographer/support/go-isatty","types"]
-  revision = "9bef594084d663dc2c58c2874b5d2edf06071744"
-  version = "v1.12.3"
+  revision = "4943fe132fbcccacbd3d896c73e7ff993558259b"
+  version = "v1.13.0"
 
 [[projects]]
   name = "github.com/onsi/gomega"
@@ -89,19 +95,19 @@
   branch = "master"
   name = "golang.org/x/net"
   packages = ["html","html/atom","html/charset"]
-  revision = "627f9648deb96c27737b83199d44bb5c1010cbcf"
+  revision = "4c5254603344ea4a8ae4bed7e296a9588303e14f"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["internal/unsafeheader","unix"]
-  revision = "6fdc65e7d9800cc59998e8ac0d9406a20ff5f399"
+  revision = "ddb9806d33aed8dbaac1cd6f1cba58952e87f933"
 
 [[projects]]
   name = "golang.org/x/text"
   packages = ["encoding","encoding/charmap","encoding/htmlindex","encoding/internal","encoding/internal/identifier","encoding/japanese","encoding/korean","encoding/simplifiedchinese","encoding/traditionalchinese","encoding/unicode","internal/gen","internal/language","internal/language/compact","internal/tag","internal/utf8internal","language","runes","transform","unicode/cldr"]
-  revision = "342b2e1fbaa52c93f31447ad2c6abc048c63e475"
-  version = "v0.3.2"
+  revision = "23ae387dee1f90d29a23c0e87ee0b46038fbed0e"
+  version = "v0.3.3"
 
 [[projects]]
   branch = "master"
@@ -125,11 +131,11 @@
   branch = "v3"
   name = "gopkg.in/yaml.v3"
   packages = ["."]
-  revision = "a5ece683394c3b88d90572e44d36c93aea492c2c"
+  revision = "eeeca48fe7764f320e4870d231902bf9c1be2c08"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "9f6155a85eb0367ae8b231cf7c3bf0d248db472fe33d8123de0bba3958463828"
+  inputs-digest = "1d46ac4efd40fb419d875a808ec690d0470d3f033364e68d3239b36ac0c851ff"
   solver-name = "gps-cdcl"
   solver-version = 1

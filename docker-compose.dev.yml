@@ -1,9 +1,18 @@
 version: "3.7"
 services:
+  mysql:
+    image: mariadb:latest
+    environment:
+      - MYSQL_ROOT_PASSWORD=iverbs
   api:
     build:
       context: .
       target: dev
+    depends_on:
+      - redis
+      - mysql
+    environment:
+      - CGO_ENABLED=0
+      - MIGRATIONS_PATH=/go/src/bradreed.co.uk/iverbs/api/vendor/github.com/noisyscanner/gofly/migrations
     volumes:
       - .:/go/src/bradreed.co.uk/iverbs/api
-

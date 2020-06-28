@@ -17,17 +17,21 @@ type Server struct {
 	Port           int
 	TokenPersister tokens.TokenPersister
 	TokenValidator tokens.TokenValidator
+	Router         *httprouter.Router
+}
+
+func (s *Server) Setup() {
+	s.Router = httprouter.New()
+	s.Router.PanicHandler = handlePanic
+	s.Router.GET("/languages", getLanguages(s.Fetcher))
+	s.Router.GET("/languages/:code", getLanguage(s))
+	s.Router.POST("/tokens", generateToken(s.TokenPersister))
 }
 
 func (s *Server) Start() error {
-	router := httprouter.New()
-	router.PanicHandler = handlePanic
-	router.GET("/languages", getLanguages(s.Fetcher))
-	router.GET("/languages/:code", getLanguage(s))
-	router.POST("/tokens", generateToken(s.TokenPersister))
-
+	s.Setup()
 	listen := fmt.Sprintf(":%d", s.Port)
-	return http.ListenAndServe(listen, router)
+	return http.ListenAndServe(listen, s.Router)
 }
 
 func response(w http.ResponseWriter, resp *LanguagesResponse) {
