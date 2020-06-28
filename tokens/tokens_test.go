@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/dimonomid/clock"
+	"github.com/benbjohnson/clock"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )

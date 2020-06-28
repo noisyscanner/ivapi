@@ -1,7 +1,7 @@
 package tokens
 
 import (
-	"github.com/dimonomid/clock"
+	"github.com/benbjohnson/clock"
 	"github.com/gomodule/redigo/redis"
 	"time"
 )
