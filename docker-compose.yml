@@ -2,16 +2,18 @@ version: "3.7"
 services:
   redis:
     image: redis:latest
+    ports:
+      - 6379:6379
   api:
     build:
       context: .
     depends_on:
       - redis
     environment:
-      - DB_HOST=host.docker.internal
-      - DB_USER=ivapi
+      - DB_HOST=mysql
+      - DB_USER=root
       - DB_PASS=iverbs
-      - DB_NAME=ivapi
+      - DB_NAME=ivapi_1
       - REDIS=redis:6379
       - PORT=7000
     ports:

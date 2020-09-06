@@ -1,18 +1,20 @@
 FROM golang:1.14.4-alpine3.12 AS dev
 
-RUN apk add --no-cache dep git make
+RUN apk add --no-cache git make
 RUN go get -u github.com/cosmtrek/air
 
 ARG ROOT=/go/src/bradreed.co.uk/iverbs/api
 WORKDIR $ROOT
 
-COPY Gopkg.toml Gopkg.lock ./
-RUN dep ensure -vendor-only
+ENV REDIS=host.docker.internal:6379 \
+  PORT=7000 \
+  CGO_ENABLED=0 \
+  GO111MODULE=on
+
+COPY go.mod go.sum ./
+RUN go mod download
 
 COPY . .
-
-ENV REDIS=host.docker.internal:6379 \
-  PORT=7000
 
 EXPOSE $PORT
 

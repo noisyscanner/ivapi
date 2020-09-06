@@ -4,6 +4,9 @@ services:
     image: mariadb:latest
     environment:
       - MYSQL_ROOT_PASSWORD=iverbs
+      - MYSQL_DATABASE=ivapi_1
+    # ports:
+    #   - 3307:3306
   api:
     build:
       context: .
@@ -12,7 +15,6 @@ services:
       - redis
       - mysql
     environment:
-      - CGO_ENABLED=0
-      - MIGRATIONS_PATH=/go/src/bradreed.co.uk/iverbs/api/vendor/github.com/noisyscanner/gofly/migrations
+      - MIGRATIONS_PATH=/go/pkg/mod/github.com/noisyscanner/gofly@v1.0.0/migrations
     volumes:
       - .:/go/src/bradreed.co.uk/iverbs/api

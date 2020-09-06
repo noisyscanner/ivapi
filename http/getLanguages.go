@@ -11,13 +11,14 @@ import (
 func getLanguages(fetcher *gofly.Fetcher) httprouter.Handle {
 	return jsonRoute(func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		langs, err := fetcher.GetLangs()
+		response := &LanguagesResponse{Data: langs}
+
 		if err != nil {
 			// TODO: Error handling middleware
-			log.Fatal(err)
-			return
+			log.Print(err)
+			response.Error = err.Error()
 		}
 
-		response := &LanguagesResponse{Data: langs}
 		handleResponse(w, response)
 	})
 }
