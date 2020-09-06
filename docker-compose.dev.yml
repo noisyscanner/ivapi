@@ -5,8 +5,8 @@ services:
     environment:
       - MYSQL_ROOT_PASSWORD=iverbs
       - MYSQL_DATABASE=ivapi_1
-    # ports:
-    #   - 3307:3306
+    ports:
+      - 3307:3306
   api:
     build:
       context: .

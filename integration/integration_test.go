@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"strconv"
+	"time"
 
 	helpers "bradreed.co.uk/iverbs/api/helpers"
 	apihttp "bradreed.co.uk/iverbs/api/http"
@@ -92,18 +93,15 @@ var _ = Describe("Integration", func() {
 		Redis: helpers.GetEnvElse("REDIS", "localhost:6379"),
 	}
 	goflyConfig := GetTestConfig()
-
-	expLang := &gofly.Language{
-		Id:     1,
-		Code:   "fr",
-		Lang:   "French",
-		Locale: "fr_FR",
-	}
+	var (
+		srv *apihttp.Server
+		rr  *httptest.ResponseRecorder
+		db  *sql.DB
+		err error
+	)
 
 	BeforeSuite(func() {
-		db, err := setupTestDb(goflyConfig)
-
-		_, err = db.Exec("INSERT INTO languages (id, code, lang, locale) VALUES (?, ?, ?, ?)", expLang.Id, expLang.Code, expLang.Lang, expLang.Locale)
+		db, err = setupTestDb(goflyConfig)
 		if err != nil {
 			panic(err)
 		}
@@ -116,23 +114,90 @@ var _ = Describe("Integration", func() {
 		}
 	})
 
-	It("should return the list of languages as expected", func() {
-		srv := server.GetServer(opts, goflyConfig)
+	BeforeEach(func() {
+		srv = server.GetServer(opts, goflyConfig)
 		srv.Setup()
+		rr = httptest.NewRecorder()
+	})
 
-		req, err := http.NewRequest("GET", "/languages", nil)
-		if err != nil {
-			panic(err)
+	Context("has language", func() {
+		lang := &gofly.Language{
+			Id:            1,
+			Code:          "fr",
+			Lang:          "French",
+			Locale:        "fr_FR",
+			HasHelpers:    true,
+			HasReflexives: true,
 		}
 
-		rr := httptest.NewRecorder()
-		srv.Router.ServeHTTP(rr, req)
+		tense := &gofly.Tense{
+			Id:          1,
+			Identifier:  "je",
+			DisplayName: "Je",
+			Order:       0,
+		}
 
-		langRes := &apihttp.LanguagesResponse{}
-		json.Unmarshal(rr.Body.Bytes(), langRes)
+		pronoun := &gofly.Pronoun{
+			Id:          1,
+			Identifier:  "present",
+			DisplayName: "Present",
+			Order:       0,
+		}
 
-		Expect(langRes.Error).To(BeEmpty())
-		Expect(langRes.Data).To(HaveLen(1))
-		Expect(langRes.Data[0]).To(BeEquivalentTo(expLang))
+		verb := &gofly.Verb{
+			Id:                   1,
+			Infinitive:           "jour",
+			NormalisedInfinitive: "jour",
+			English:              "to play",
+		}
+
+		BeforeEach(func() {
+			_, err := db.Exec("INSERT INTO languages (id, code, lang, locale, hasHelpers, hasReflexives) VALUES (?, ?, ?, ?, ?, ?)", lang.Id, lang.Code, lang.Lang, lang.Locale, lang.HasHelpers, lang.HasReflexives)
+			if err != nil {
+				panic(err)
+			}
+
+			_, err = db.Exec("INSERT INTO tenses (id, lang_id, identifier, displayName, `order`) VALUES (?, ?, ?, ?, ?)", tense.Id, lang.Id, tense.Identifier, tense.DisplayName, tense.Order)
+			if err != nil {
+				panic(err)
+			}
+
+			_, err = db.Exec("INSERT INTO pronouns (id, lang_id, identifier, displayName, `order`) VALUES (?, ?, ?, ?, ?)", pronoun.Id, lang.Id, pronoun.Identifier, pronoun.DisplayName, pronoun.Order)
+			if err != nil {
+				panic(err)
+			}
+
+			_, err = db.Exec("INSERT INTO verbs (id, lang_id, infinitive, normalisedInfinitive, english, helperID) VALUES (?, ?, ?, ?, ?, NULL)", verb.Id, lang.Id, verb.Infinitive, verb.NormalisedInfinitive, verb.English)
+			if err != nil {
+				panic(err)
+			}
+		})
+
+		AfterEach(func() {
+			_, err := db.Exec("DELETE FROM languages")
+			if err != nil {
+				panic(err)
+			}
+		})
+
+		It("should return the list of languages as expected", func() {
+			req, _ := http.NewRequest("GET", "/languages", nil)
+			srv.Router.ServeHTTP(rr, req)
+
+			langRes := &apihttp.LanguagesResponse{}
+			json.Unmarshal(rr.Body.Bytes(), langRes)
+
+			Expect(langRes.Error).To(BeEmpty())
+			Expect(langRes.Data).To(HaveLen(1))
+
+			version := langRes.Data[0].Version
+			schemaVersion := langRes.Data[0].SchemaVersion
+			Expect(int64(version)).To(BeNumerically("==", time.Now().Unix()))
+			Expect(int64(schemaVersion)).To(BeNumerically("==", time.Now().Unix()))
+			lang.Version = version
+			lang.SchemaVersion = schemaVersion
+
+			Expect(langRes.Data[0]).To(BeEquivalentTo(lang))
+		})
 	})
 })
