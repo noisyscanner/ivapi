@@ -36,7 +36,7 @@ func GetServer(opts *options.Options, goflyConfig gofly.ConfigService) (server *
 	}
 
 	cacheProvider := &cache.FileCacheProvider{
-		RootDirectory: "../gofly/langcache",
+		RootDirectory: opts.CacheDirectory,
 	}
 
 	if err != nil {

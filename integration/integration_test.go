@@ -4,8 +4,10 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"strconv"
 	"time"
 
@@ -92,8 +94,9 @@ func setupTestDb(goflyConfig *TestConfigService) (db *sql.DB, err error) {
 
 var _ = Describe("Integration", func() {
 	opts := &options.Options{
-		Port:  6000,
-		Redis: helpers.GetEnvElse("REDIS", "localhost:6379"),
+		Port:           6000,
+		Redis:          helpers.GetEnvElse("REDIS", "localhost:6379"),
+		CacheDirectory: "../testCache",
 	}
 	goflyConfig := GetTestConfig()
 	var (
@@ -122,6 +125,22 @@ var _ = Describe("Integration", func() {
 		srv.Setup()
 		rr = httptest.NewRecorder()
 	})
+
+	getToken := func() (err error, token string) {
+		req, _ := http.NewRequest("POST", "/tokens", nil)
+		rrLocal := httptest.NewRecorder()
+		srv.Router.ServeHTTP(rrLocal, req)
+
+		tokenRes := &apihttp.TokenResponse{}
+		json.Unmarshal(rrLocal.Body.Bytes(), tokenRes)
+
+		if tokenRes.Error != "" {
+			err = fmt.Errorf(tokenRes.Error)
+		}
+
+		token = tokenRes.Token
+		return
+	}
 
 	Describe("POST /tokens", func() {
 		It("should return a token and persist to Redis", func() {
@@ -206,24 +225,76 @@ var _ = Describe("Integration", func() {
 			}
 		})
 
-		It("should return the list of languages as expected", func() {
-			req, _ := http.NewRequest("GET", "/languages", nil)
-			srv.Router.ServeHTTP(rr, req)
+		Describe("GET /languages", func() {
+			It("should return the list of languages as expected", func() {
+				req, _ := http.NewRequest("GET", "/languages", nil)
+				srv.Router.ServeHTTP(rr, req)
 
-			langRes := &apihttp.LanguagesResponse{}
-			json.Unmarshal(rr.Body.Bytes(), langRes)
+				langRes := &apihttp.LanguagesResponse{}
+				err := json.Unmarshal(rr.Body.Bytes(), langRes)
+				Expect(err).To(BeNil())
 
-			Expect(langRes.Error).To(BeEmpty())
-			Expect(langRes.Data).To(HaveLen(1))
+				Expect(langRes.Error).To(BeEmpty())
+				Expect(langRes.Data).To(HaveLen(1))
 
-			version := langRes.Data[0].Version
-			schemaVersion := langRes.Data[0].SchemaVersion
-			Expect(int64(version)).To(BeNumerically("==", time.Now().Unix()))
-			Expect(int64(schemaVersion)).To(BeNumerically("==", time.Now().Unix()))
-			lang.Version = version
-			lang.SchemaVersion = schemaVersion
+				version := langRes.Data[0].Version
+				schemaVersion := langRes.Data[0].SchemaVersion
+				Expect(int64(version)).To(BeNumerically("==", time.Now().Unix()))
+				Expect(int64(schemaVersion)).To(BeNumerically("==", time.Now().Unix()))
+				lang.Version = version
+				lang.SchemaVersion = schemaVersion
 
-			Expect(langRes.Data[0]).To(BeEquivalentTo(lang))
+				Expect(langRes.Data[0]).To(BeEquivalentTo(lang))
+			})
+		})
+
+		Describe("GET /languages/{code}", func() {
+			contents := `{"test": "json"}`
+
+			var (
+				err   error
+				token string
+			)
+
+			BeforeEach(func() {
+				err, token = getToken()
+				Expect(err).To(BeNil())
+			})
+
+			Context("language exists", func() {
+				BeforeEach(func() {
+					err = os.Mkdir(opts.CacheDirectory, 0755)
+					Expect(err).To(BeNil())
+					cacheFile := opts.CacheDirectory + "/fr.json.full"
+					err := ioutil.WriteFile(cacheFile, []byte(contents), 0644)
+					Expect(err).To(BeNil())
+				})
+
+				AfterEach(func() {
+					os.RemoveAll(opts.CacheDirectory)
+				})
+
+				It("should return an existing language", func() {
+					req, _ := http.NewRequest("GET", "/languages/fr", nil)
+					req.Header.Add("Authorization", token)
+					srv.Router.ServeHTTP(rr, req)
+
+					Expect(rr.Body.String()).To(Equal(contents))
+				})
+			})
+
+			Context("language does not exist", func() {
+				It("should return an error if the cache file does not exist", func() {
+					req, _ := http.NewRequest("GET", "/languages/fr", nil)
+					req.Header.Add("Authorization", token)
+					srv.Router.ServeHTTP(rr, req)
+
+					errRes := &apihttp.LanguagesResponse{}
+					json.Unmarshal(rr.Body.Bytes(), errRes)
+
+					Expect(errRes.Error).To(Equal("Language not found"))
+				})
+			})
 		})
 	})
 })

@@ -36,4 +36,3 @@ func getLanguage(s *Server) httprouter.Handle {
 		io.Copy(w, file)
 	}))
 }
-
