@@ -16,11 +16,14 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/golang-migrate/migrate/database/mysql"
 	_ "github.com/golang-migrate/migrate/source/file"
+	"github.com/gomodule/redigo/redis"
 	"github.com/noisyscanner/gofly/gofly"
 	"github.com/noisyscanner/gofly/migrate"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
+
+const KEY = "iverbs"
 
 // TODO migrations path
 
@@ -118,6 +121,29 @@ var _ = Describe("Integration", func() {
 		srv = server.GetServer(opts, goflyConfig)
 		srv.Setup()
 		rr = httptest.NewRecorder()
+	})
+
+	Describe("POST /tokens", func() {
+		It("should return a token and persist to Redis", func() {
+			req, _ := http.NewRequest("POST", "/tokens", nil)
+			srv.Router.ServeHTTP(rr, req)
+
+			tokenRes := &apihttp.TokenResponse{}
+			json.Unmarshal(rr.Body.Bytes(), tokenRes)
+
+			Expect(tokenRes.Error).To(BeEmpty())
+
+			redisClient, err := server.ConnectToRedis(opts)
+			Expect(err).To(BeNil())
+			defer redisClient.Close()
+
+			expiryStr, err := redis.String(redisClient.Do("HGET", KEY, tokenRes.Token))
+			Expect(err).To(BeNil())
+
+			expiryTime, err := time.Parse(time.RFC3339, expiryStr)
+			Expect(err).To(BeNil())
+			Expect(expiryTime.Unix()).To(BeNumerically(">", time.Now().Unix()))
+		})
 	})
 
 	Context("has language", func() {

@@ -24,7 +24,7 @@ func connect(configService gofly.ConfigService) (fetcher *gofly.Fetcher, err err
 	return
 }
 
-func connectToRedis(options *options.Options) (redis.Conn, error) {
+func ConnectToRedis(options *options.Options) (redis.Conn, error) {
 	return redis.Dial("tcp", options.Redis)
 }
 
@@ -44,7 +44,7 @@ func GetServer(opts *options.Options, goflyConfig gofly.ConfigService) (server *
 		return
 	}
 
-	redisConn, err := connectToRedis(opts)
+	redisConn, err := ConnectToRedis(opts)
 	if err != nil {
 		log.Fatal(err)
 		return
