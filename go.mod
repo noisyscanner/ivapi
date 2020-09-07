@@ -1,5 +1,7 @@
 module bradreed.co.uk/iverbs/api
 
+replace github.com/noisyscanner/gofly => ../gofly
+
 go 1.14
 
 require (
