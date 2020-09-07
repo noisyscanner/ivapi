@@ -4,10 +4,10 @@ import (
 	"log"
 	"strconv"
 
-	. "bradreed.co.uk/iverbs/api/helpers"
-	"bradreed.co.uk/iverbs/api/options"
-	"bradreed.co.uk/iverbs/api/server"
 	gofly "github.com/noisyscanner/gofly/gofly"
+	. "github.com/noisyscanner/ivapi/helpers"
+	"github.com/noisyscanner/ivapi/options"
+	"github.com/noisyscanner/ivapi/server"
 )
 
 type EnvConfigService struct{}

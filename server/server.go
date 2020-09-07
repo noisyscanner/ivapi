@@ -3,12 +3,12 @@ package server
 import (
 	"log"
 
-	"bradreed.co.uk/iverbs/api/cache"
-	iverbs_http "bradreed.co.uk/iverbs/api/http"
-	"bradreed.co.uk/iverbs/api/options"
-	"bradreed.co.uk/iverbs/api/tokens"
 	"github.com/gomodule/redigo/redis"
 	gofly "github.com/noisyscanner/gofly/gofly"
+	"github.com/noisyscanner/ivapi/cache"
+	iverbs_http "github.com/noisyscanner/ivapi/http"
+	"github.com/noisyscanner/ivapi/options"
+	"github.com/noisyscanner/ivapi/tokens"
 )
 
 func connect(configService gofly.ConfigService) (fetcher *gofly.Fetcher, err error) {

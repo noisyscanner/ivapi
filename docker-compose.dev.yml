@@ -15,6 +15,6 @@ services:
       - redis
       - mysql
     environment:
-      - MIGRATIONS_PATH=/go/pkg/mod/github.com/noisyscanner/gofly@v1.0.0/migrations
+      - MIGRATIONS_PATH=/go/pkg/mod/github.com/noisyscanner/gofly@v1.0.1/migrations
     volumes:
-      - .:/go/src/bradreed.co.uk/iverbs/api
+      - .:/go/src/github.com/noisyscanner/ivapi

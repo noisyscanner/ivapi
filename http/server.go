@@ -5,10 +5,10 @@ import (
 	"log"
 	"net/http"
 
-	"bradreed.co.uk/iverbs/api/cache"
-	"bradreed.co.uk/iverbs/api/tokens"
 	"github.com/julienschmidt/httprouter"
 	gofly "github.com/noisyscanner/gofly/gofly"
+	"github.com/noisyscanner/ivapi/cache"
+	"github.com/noisyscanner/ivapi/tokens"
 )
 
 type Server struct {

@@ -4,8 +4,8 @@ import (
 	"log"
 	"net/http"
 
-	"bradreed.co.uk/iverbs/api/tokens"
 	"github.com/julienschmidt/httprouter"
+	"github.com/noisyscanner/ivapi/tokens"
 )
 
 func generateToken(tokenPersister tokens.TokenPersister) httprouter.Handle {

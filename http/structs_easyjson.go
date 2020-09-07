@@ -18,7 +18,7 @@ var (
 	_ easyjson.Marshaler
 )
 
-func easyjson6a975c40DecodeBradreedCoUkIverbsApiHttp(in *jlexer.Lexer, out *TokenResponse) {
+func easyjson6a975c40DecodeGithubComNoisyscannerIvapiHttp(in *jlexer.Lexer, out *TokenResponse) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -29,7 +29,7 @@ func easyjson6a975c40DecodeBradreedCoUkIverbsApiHttp(in *jlexer.Lexer, out *Toke
 	}
 	in.Delim('{')
 	for !in.IsDelim('}') {
-		key := in.UnsafeString()
+		key := in.UnsafeFieldName(false)
 		in.WantColon()
 		if in.IsNull() {
 			in.Skip()
@@ -51,7 +51,7 @@ func easyjson6a975c40DecodeBradreedCoUkIverbsApiHttp(in *jlexer.Lexer, out *Toke
 		in.Consumed()
 	}
 }
-func easyjson6a975c40EncodeBradreedCoUkIverbsApiHttp(out *jwriter.Writer, in TokenResponse) {
+func easyjson6a975c40EncodeGithubComNoisyscannerIvapiHttp(out *jwriter.Writer, in TokenResponse) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -71,27 +71,27 @@ func easyjson6a975c40EncodeBradreedCoUkIverbsApiHttp(out *jwriter.Writer, in Tok
 // MarshalJSON supports json.Marshaler interface
 func (v TokenResponse) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	easyjson6a975c40EncodeBradreedCoUkIverbsApiHttp(&w, v)
+	easyjson6a975c40EncodeGithubComNoisyscannerIvapiHttp(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v TokenResponse) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjson6a975c40EncodeBradreedCoUkIverbsApiHttp(w, v)
+	easyjson6a975c40EncodeGithubComNoisyscannerIvapiHttp(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *TokenResponse) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	easyjson6a975c40DecodeBradreedCoUkIverbsApiHttp(&r, v)
+	easyjson6a975c40DecodeGithubComNoisyscannerIvapiHttp(&r, v)
 	return r.Error()
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *TokenResponse) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjson6a975c40DecodeBradreedCoUkIverbsApiHttp(l, v)
+	easyjson6a975c40DecodeGithubComNoisyscannerIvapiHttp(l, v)
 }
-func easyjson6a975c40DecodeBradreedCoUkIverbsApiHttp1(in *jlexer.Lexer, out *LanguagesResponse) {
+func easyjson6a975c40DecodeGithubComNoisyscannerIvapiHttp1(in *jlexer.Lexer, out *LanguagesResponse) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -102,7 +102,7 @@ func easyjson6a975c40DecodeBradreedCoUkIverbsApiHttp1(in *jlexer.Lexer, out *Lan
 	}
 	in.Delim('{')
 	for !in.IsDelim('}') {
-		key := in.UnsafeString()
+		key := in.UnsafeFieldName(false)
 		in.WantColon()
 		if in.IsNull() {
 			in.Skip()
@@ -153,7 +153,7 @@ func easyjson6a975c40DecodeBradreedCoUkIverbsApiHttp1(in *jlexer.Lexer, out *Lan
 		in.Consumed()
 	}
 }
-func easyjson6a975c40EncodeBradreedCoUkIverbsApiHttp1(out *jwriter.Writer, in LanguagesResponse) {
+func easyjson6a975c40EncodeGithubComNoisyscannerIvapiHttp1(out *jwriter.Writer, in LanguagesResponse) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -188,23 +188,23 @@ func easyjson6a975c40EncodeBradreedCoUkIverbsApiHttp1(out *jwriter.Writer, in La
 // MarshalJSON supports json.Marshaler interface
 func (v LanguagesResponse) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	easyjson6a975c40EncodeBradreedCoUkIverbsApiHttp1(&w, v)
+	easyjson6a975c40EncodeGithubComNoisyscannerIvapiHttp1(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v LanguagesResponse) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjson6a975c40EncodeBradreedCoUkIverbsApiHttp1(w, v)
+	easyjson6a975c40EncodeGithubComNoisyscannerIvapiHttp1(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *LanguagesResponse) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	easyjson6a975c40DecodeBradreedCoUkIverbsApiHttp1(&r, v)
+	easyjson6a975c40DecodeGithubComNoisyscannerIvapiHttp1(&r, v)
 	return r.Error()
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *LanguagesResponse) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjson6a975c40DecodeBradreedCoUkIverbsApiHttp1(l, v)
+	easyjson6a975c40DecodeGithubComNoisyscannerIvapiHttp1(l, v)
 }
