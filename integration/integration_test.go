@@ -27,8 +27,6 @@ import (
 
 const KEY = "iverbs"
 
-// TODO migrations path
-
 type TestConfigService struct {
 	Driver string
 	Host   string
@@ -250,10 +248,12 @@ var _ = Describe("Integration", func() {
 
 		Describe("GET /languages/{code}", func() {
 			contents := `{"test": "json"}`
+			contentsBytes := []byte(contents)
 
 			var (
-				err   error
-				token string
+				err             error
+				token           string
+				gzContentsBytes []byte
 			)
 
 			BeforeEach(func() {
@@ -265,8 +265,15 @@ var _ = Describe("Integration", func() {
 				BeforeEach(func() {
 					err = os.Mkdir(opts.CacheDirectory, 0755)
 					Expect(err).To(BeNil())
+
 					cacheFile := opts.CacheDirectory + "/fr.json.full"
-					err := ioutil.WriteFile(cacheFile, []byte(contents), 0644)
+					err := ioutil.WriteFile(cacheFile, contentsBytes, 0644)
+					Expect(err).To(BeNil())
+
+					gzCacheFile := opts.CacheDirectory + "/fr.json.full.gz"
+					gzContentsBytes, err = gofly.ZipBytes(contentsBytes)
+					Expect(err).To(BeNil())
+					err = ioutil.WriteFile(gzCacheFile, gzContentsBytes, 0644)
 					Expect(err).To(BeNil())
 				})
 
@@ -280,6 +287,15 @@ var _ = Describe("Integration", func() {
 					srv.Router.ServeHTTP(rr, req)
 
 					Expect(rr.Body.String()).To(Equal(contents))
+				})
+
+				It("should return an existing language as GZIP", func() {
+					req, _ := http.NewRequest("GET", "/languages/fr", nil)
+					req.Header.Add("Authorization", token)
+					req.Header.Add("Accept-Encoding", "gzip")
+					srv.Router.ServeHTTP(rr, req)
+
+					Expect(rr.Body.Bytes()).To(Equal(gzContentsBytes))
 				})
 			})
 
