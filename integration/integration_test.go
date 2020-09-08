@@ -97,25 +97,28 @@ var _ = Describe("Integration", func() {
 		CacheDirectory: "../testCache",
 	}
 	goflyConfig := GetTestConfig()
+
 	var (
-		srv *apihttp.Server
-		rr  *httptest.ResponseRecorder
-		db  *sql.DB
-		err error
+		srv         *apihttp.Server
+		rr          *httptest.ResponseRecorder
+		redisClient redis.Conn
+		db          *sql.DB
+		err         error
 	)
 
 	BeforeSuite(func() {
 		db, err = setupTestDb(goflyConfig)
-		if err != nil {
-			panic(err)
-		}
+		Expect(err).To(BeNil())
+
+		redisClient, err = server.ConnectToRedis(opts)
+		Expect(err).To(BeNil())
 	})
 
 	AfterSuite(func() {
 		err := migrate.Down(goflyConfig)
-		if err != nil {
-			panic(err)
-		}
+		Expect(err).To(BeNil())
+
+		redisClient.Close()
 	})
 
 	BeforeEach(func() {
@@ -149,10 +152,6 @@ var _ = Describe("Integration", func() {
 			json.Unmarshal(rr.Body.Bytes(), tokenRes)
 
 			Expect(tokenRes.Error).To(BeEmpty())
-
-			redisClient, err := server.ConnectToRedis(opts)
-			Expect(err).To(BeNil())
-			defer redisClient.Close()
 
 			expiryStr, err := redis.String(redisClient.Do("HGET", KEY, tokenRes.Token))
 			Expect(err).To(BeNil())
@@ -259,6 +258,15 @@ var _ = Describe("Integration", func() {
 			BeforeEach(func() {
 				err, token = getToken()
 				Expect(err).To(BeNil())
+			})
+
+			It("should invalidate the token", func() {
+				req, _ := http.NewRequest("GET", "/languages/fr", nil)
+				req.Header.Add("Authorization", token)
+				srv.Router.ServeHTTP(rr, req)
+
+				_, err := redis.String(redisClient.Do("HGET", KEY, token))
+				Expect(err).To(Equal(redis.ErrNil))
 			})
 
 			Context("language exists", func() {
