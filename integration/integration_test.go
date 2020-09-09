@@ -1,165 +1,24 @@
 package integration
 
 import (
-	"database/sql"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
-	"net/http/httptest"
 	"os"
-	"strconv"
 	"time"
 
-	_ "github.com/go-sql-driver/mysql"
-	_ "github.com/golang-migrate/migrate/database/mysql"
-	_ "github.com/golang-migrate/migrate/source/file"
 	"github.com/gomodule/redigo/redis"
 	"github.com/noisyscanner/gofly/gofly"
-	"github.com/noisyscanner/gofly/migrate"
-	helpers "github.com/noisyscanner/ivapi/helpers"
 	apihttp "github.com/noisyscanner/ivapi/http"
-	"github.com/noisyscanner/ivapi/options"
-	"github.com/noisyscanner/ivapi/server"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
 const KEY = "iverbs"
 
-type TestConfigService struct {
-	Driver string
-	Host   string
-	User   string
-	Pass   string
-	Port   int
-	Db     string
-}
-
-func GetTestConfig() *TestConfigService {
-	port, _ := strconv.Atoi(helpers.GetEnvElse("DB_PORT", "3306"))
-	return &TestConfigService{
-		Driver: helpers.GetEnvElse("DB_DRIVER", "mysql"),
-		Host:   helpers.GetEnvElse("DB_HOST", "localhost"),
-		User:   helpers.GetEnvElse("DB_USER", "root"),
-		Pass:   helpers.GetEnvElse("DB_PASS", "iverbs"),
-		Port:   port,
-		Db:     helpers.GetEnvElse("DB_NAME", "ivapi_1"),
-	}
-}
-
-func (c *TestConfigService) GetConfig() *gofly.DBConfig {
-	return &gofly.DBConfig{
-		Driver: c.Driver,
-		Host:   c.Host,
-		User:   c.User,
-		Pass:   c.Pass,
-		Port:   c.Port,
-		Db:     c.Db,
-	}
-}
-
-func (c *TestConfigService) ConnString() string {
-	return fmt.Sprintf("%v:%v@tcp(%v:%v)/", c.User, c.Pass, c.Host, c.Port)
-}
-
-func setupTestDb(goflyConfig *TestConfigService) (db *sql.DB, err error) {
-	db, err = sql.Open("mysql", goflyConfig.ConnString())
-	if err != nil {
-		return
-	}
-
-	_, err = db.Exec("DROP DATABASE IF EXISTS " + goflyConfig.Db)
-	if err != nil {
-		return
-	}
-
-	_, err = db.Exec("CREATE DATABASE " + goflyConfig.Db)
-	if err != nil {
-		return
-	}
-
-	db.Close()
-
-	db, err = sql.Open("mysql", goflyConfig.GetConfig().DBString())
-	if err != nil {
-		return
-	}
-
-	err = migrate.Up(goflyConfig)
-	return
-}
-
-var _ = Describe("Integration", func() {
-	opts := &options.Options{
-		Port:           6000,
-		Redis:          helpers.GetEnvElse("REDIS", "localhost:6379"),
-		CacheDirectory: "../testCache",
-	}
-	goflyConfig := GetTestConfig()
-
-	var (
-		srv         *apihttp.Server
-		rr          *httptest.ResponseRecorder
-		redisClient redis.Conn
-		db          *sql.DB
-		err         error
-	)
-
-	BeforeSuite(func() {
-		db, err = setupTestDb(goflyConfig)
-		Expect(err).To(BeNil())
-
-		redisClient, err = server.ConnectToRedis(opts)
-		Expect(err).To(BeNil())
-	})
-
-	AfterSuite(func() {
-		err := migrate.Down(goflyConfig)
-		Expect(err).To(BeNil())
-
-		redisClient.Close()
-	})
-
+var _ = Describe("Integration: languages", func() {
 	BeforeEach(func() {
-		srv = server.GetServer(opts, goflyConfig)
-		srv.Setup()
-		rr = httptest.NewRecorder()
-	})
-
-	getToken := func() (err error, token string) {
-		req, _ := http.NewRequest("POST", "/tokens", nil)
-		rrLocal := httptest.NewRecorder()
-		srv.Router.ServeHTTP(rrLocal, req)
-
-		tokenRes := &apihttp.TokenResponse{}
-		json.Unmarshal(rrLocal.Body.Bytes(), tokenRes)
-
-		if tokenRes.Error != "" {
-			err = fmt.Errorf(tokenRes.Error)
-		}
-
-		token = tokenRes.Token
-		return
-	}
-
-	Describe("POST /tokens", func() {
-		It("should return a token and persist to Redis", func() {
-			req, _ := http.NewRequest("POST", "/tokens", nil)
-			srv.Router.ServeHTTP(rr, req)
-
-			tokenRes := &apihttp.TokenResponse{}
-			json.Unmarshal(rr.Body.Bytes(), tokenRes)
-
-			Expect(tokenRes.Error).To(BeEmpty())
-
-			expiryStr, err := redis.String(redisClient.Do("HGET", KEY, tokenRes.Token))
-			Expect(err).To(BeNil())
-
-			expiryTime, err := time.Parse(time.RFC3339, expiryStr)
-			Expect(err).To(BeNil())
-			Expect(expiryTime.Unix()).To(BeNumerically(">", time.Now().Unix()))
-		})
+		srv, rr = SetupServer()
 	})
 
 	Context("has language", func() {
@@ -195,31 +54,21 @@ var _ = Describe("Integration", func() {
 
 		BeforeEach(func() {
 			_, err := db.Exec("INSERT INTO languages (id, code, lang, locale, hasHelpers, hasReflexives) VALUES (?, ?, ?, ?, ?, ?)", lang.Id, lang.Code, lang.Lang, lang.Locale, lang.HasHelpers, lang.HasReflexives)
-			if err != nil {
-				panic(err)
-			}
+			Expect(err).To(BeNil())
 
 			_, err = db.Exec("INSERT INTO tenses (id, lang_id, identifier, displayName, `order`) VALUES (?, ?, ?, ?, ?)", tense.Id, lang.Id, tense.Identifier, tense.DisplayName, tense.Order)
-			if err != nil {
-				panic(err)
-			}
+			Expect(err).To(BeNil())
 
 			_, err = db.Exec("INSERT INTO pronouns (id, lang_id, identifier, displayName, `order`) VALUES (?, ?, ?, ?, ?)", pronoun.Id, lang.Id, pronoun.Identifier, pronoun.DisplayName, pronoun.Order)
-			if err != nil {
-				panic(err)
-			}
+			Expect(err).To(BeNil())
 
 			_, err = db.Exec("INSERT INTO verbs (id, lang_id, infinitive, normalisedInfinitive, english, helperID) VALUES (?, ?, ?, ?, ?, NULL)", verb.Id, lang.Id, verb.Infinitive, verb.NormalisedInfinitive, verb.English)
-			if err != nil {
-				panic(err)
-			}
+			Expect(err).To(BeNil())
 		})
 
 		AfterEach(func() {
 			_, err := db.Exec("DELETE FROM languages")
-			if err != nil {
-				panic(err)
-			}
+			Expect(err).To(BeNil())
 		})
 
 		Describe("GET /languages", func() {
@@ -256,8 +105,7 @@ var _ = Describe("Integration", func() {
 			)
 
 			BeforeEach(func() {
-				err, token = getToken()
-				Expect(err).To(BeNil())
+				token = GetToken(srv)
 			})
 
 			It("should invalidate the token", func() {
