@@ -33,4 +33,3 @@ func jsonRoute(handler httprouter.Handle) httprouter.Handle {
 		handler(w, r, p)
 	}
 }
-

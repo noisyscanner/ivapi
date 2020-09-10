@@ -8,6 +8,7 @@ import (
 	gofly "github.com/noisyscanner/gofly/gofly"
 	"github.com/noisyscanner/ivapi/cache"
 	iverbs_http "github.com/noisyscanner/ivapi/http"
+	"github.com/noisyscanner/ivapi/iap"
 	"github.com/noisyscanner/ivapi/options"
 	"github.com/noisyscanner/ivapi/tokens"
 )
@@ -61,10 +62,11 @@ func GetServer(opts *options.Options, goflyConfig gofly.ConfigService) (server *
 	tokenValidator := tokens.NewRedisTokenValidator(redisPool)
 
 	return &iverbs_http.Server{
-		Port:           opts.Port,
-		Fetcher:        fetcher,
-		CacheProvider:  cacheProvider,
-		TokenPersister: tokenPersister,
-		TokenValidator: tokenValidator,
+		Port:             opts.Port,
+		Fetcher:          fetcher,
+		CacheProvider:    cacheProvider,
+		TokenPersister:   tokenPersister,
+		TokenValidator:   tokenValidator,
+		ReceiptValidator: iap.NewIapValidator(),
 	}
 }

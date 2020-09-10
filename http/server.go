@@ -8,16 +8,18 @@ import (
 	"github.com/julienschmidt/httprouter"
 	gofly "github.com/noisyscanner/gofly/gofly"
 	"github.com/noisyscanner/ivapi/cache"
+	"github.com/noisyscanner/ivapi/iap"
 	"github.com/noisyscanner/ivapi/tokens"
 )
 
 type Server struct {
-	Fetcher        *gofly.Fetcher
-	CacheProvider  cache.CacheProvider
-	Port           int
-	TokenPersister tokens.TokenPersister
-	TokenValidator tokens.TokenValidator
-	Router         *httprouter.Router
+	Fetcher          *gofly.Fetcher
+	CacheProvider    cache.CacheProvider
+	Port             int
+	TokenPersister   tokens.TokenPersister
+	TokenValidator   tokens.TokenValidator
+	ReceiptValidator *iap.IapValidator
+	Router           *httprouter.Router
 }
 
 func (s *Server) Setup() {
@@ -26,6 +28,7 @@ func (s *Server) Setup() {
 	s.Router.GET("/languages", getLanguages(s.Fetcher))
 	s.Router.GET("/languages/:code", getLanguage(s))
 	s.Router.POST("/tokens", generateToken(s.TokenPersister))
+	s.Router.POST("/iapvalidate", iapValidate(s))
 }
 
 func (s *Server) Start() error {
@@ -34,7 +37,7 @@ func (s *Server) Start() error {
 	return http.ListenAndServe(listen, s.Router)
 }
 
-func response(w http.ResponseWriter, resp *LanguagesResponse) {
+func response(w http.ResponseWriter, resp Response) {
 	json, err := resp.MarshalJSON()
 	if err != nil {
 		// TODO: Error handling middleware

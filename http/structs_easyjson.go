@@ -208,3 +208,76 @@ func (v *LanguagesResponse) UnmarshalJSON(data []byte) error {
 func (v *LanguagesResponse) UnmarshalEasyJSON(l *jlexer.Lexer) {
 	easyjson6a975c40DecodeGithubComNoisyscannerIvapiHttp1(l, v)
 }
+func easyjson6a975c40DecodeGithubComNoisyscannerIvapiHttp2(in *jlexer.Lexer, out *IapResponse) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		if isTopLevel {
+			in.Consumed()
+		}
+		in.Skip()
+		return
+	}
+	in.Delim('{')
+	for !in.IsDelim('}') {
+		key := in.UnsafeFieldName(false)
+		in.WantColon()
+		if in.IsNull() {
+			in.Skip()
+			in.WantComma()
+			continue
+		}
+		switch key {
+		case "success":
+			out.Success = bool(in.Bool())
+		case "error":
+			out.Error = string(in.String())
+		default:
+			in.SkipRecursive()
+		}
+		in.WantComma()
+	}
+	in.Delim('}')
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjson6a975c40EncodeGithubComNoisyscannerIvapiHttp2(out *jwriter.Writer, in IapResponse) {
+	out.RawByte('{')
+	first := true
+	_ = first
+	{
+		const prefix string = ",\"success\":"
+		out.RawString(prefix[1:])
+		out.Bool(bool(in.Success))
+	}
+	if in.Error != "" {
+		const prefix string = ",\"error\":"
+		out.RawString(prefix)
+		out.String(string(in.Error))
+	}
+	out.RawByte('}')
+}
+
+// MarshalJSON supports json.Marshaler interface
+func (v IapResponse) MarshalJSON() ([]byte, error) {
+	w := jwriter.Writer{}
+	easyjson6a975c40EncodeGithubComNoisyscannerIvapiHttp2(&w, v)
+	return w.Buffer.BuildBytes(), w.Error
+}
+
+// MarshalEasyJSON supports easyjson.Marshaler interface
+func (v IapResponse) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjson6a975c40EncodeGithubComNoisyscannerIvapiHttp2(w, v)
+}
+
+// UnmarshalJSON supports json.Unmarshaler interface
+func (v *IapResponse) UnmarshalJSON(data []byte) error {
+	r := jlexer.Lexer{Data: data}
+	easyjson6a975c40DecodeGithubComNoisyscannerIvapiHttp2(&r, v)
+	return r.Error()
+}
+
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
+func (v *IapResponse) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjson6a975c40DecodeGithubComNoisyscannerIvapiHttp2(l, v)
+}
