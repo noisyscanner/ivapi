@@ -16,54 +16,42 @@ import (
 
 const KEY = "iverbs"
 
+func insertLang(lang *gofly.Language) {
+	_, err := db.Exec("INSERT INTO languages (id, code, lang, locale, hasHelpers, hasReflexives) VALUES (?, ?, ?, ?, ?, ?)", lang.Id, lang.Code, lang.Lang, lang.Locale, lang.HasHelpers, lang.HasReflexives)
+	Expect(err).To(BeNil())
+}
+
+func insertTense(lang *gofly.Language, tense *gofly.Tense) {
+	_, err := db.Exec("INSERT INTO tenses (id, lang_id, identifier, displayName, `order`) VALUES (?, ?, ?, ?, ?)", tense.Id, lang.Id, tense.Identifier, tense.DisplayName, tense.Order)
+	Expect(err).To(BeNil())
+}
+
+func insertPronoun(lang *gofly.Language, pronoun *gofly.Pronoun) {
+	_, err := db.Exec("INSERT INTO pronouns (id, lang_id, identifier, displayName, `order`) VALUES (?, ?, ?, ?, ?)", pronoun.Id, lang.Id, pronoun.Identifier, pronoun.DisplayName, pronoun.Order)
+	Expect(err).To(BeNil())
+}
+
+func insertVerb(lang *gofly.Language, verb *gofly.Verb) {
+	_, err := db.Exec("INSERT INTO verbs (id, lang_id, infinitive, normalisedInfinitive, english, helperID) VALUES (?, ?, ?, ?, ?, NULL)", verb.Id, lang.Id, verb.Infinitive, verb.NormalisedInfinitive, verb.English)
+	Expect(err).To(BeNil())
+}
+
 var _ = Describe("Integration: languages", func() {
 	BeforeEach(func() {
 		srv, rr = SetupServer()
 	})
 
 	Context("has language", func() {
-		lang := &gofly.Language{
-			Id:            1,
-			Code:          "fr",
-			Lang:          "French",
-			Locale:        "fr_FR",
-			HasHelpers:    true,
-			HasReflexives: true,
-		}
-
-		tense := &gofly.Tense{
-			Id:          1,
-			Identifier:  "je",
-			DisplayName: "Je",
-			Order:       0,
-		}
-
-		pronoun := &gofly.Pronoun{
-			Id:          1,
-			Identifier:  "present",
-			DisplayName: "Present",
-			Order:       0,
-		}
-
-		verb := &gofly.Verb{
-			Id:                   1,
-			Infinitive:           "jour",
-			NormalisedInfinitive: "jour",
-			English:              "to play",
-		}
-
 		BeforeEach(func() {
-			_, err := db.Exec("INSERT INTO languages (id, code, lang, locale, hasHelpers, hasReflexives) VALUES (?, ?, ?, ?, ?, ?)", lang.Id, lang.Code, lang.Lang, lang.Locale, lang.HasHelpers, lang.HasReflexives)
-			Expect(err).To(BeNil())
+			insertLang(frenchLang)
+			insertTense(frenchLang, frenchTense)
+			insertPronoun(frenchLang, frenchPronoun)
+			insertVerb(frenchLang, frenchVerb)
 
-			_, err = db.Exec("INSERT INTO tenses (id, lang_id, identifier, displayName, `order`) VALUES (?, ?, ?, ?, ?)", tense.Id, lang.Id, tense.Identifier, tense.DisplayName, tense.Order)
-			Expect(err).To(BeNil())
-
-			_, err = db.Exec("INSERT INTO pronouns (id, lang_id, identifier, displayName, `order`) VALUES (?, ?, ?, ?, ?)", pronoun.Id, lang.Id, pronoun.Identifier, pronoun.DisplayName, pronoun.Order)
-			Expect(err).To(BeNil())
-
-			_, err = db.Exec("INSERT INTO verbs (id, lang_id, infinitive, normalisedInfinitive, english, helperID) VALUES (?, ?, ?, ?, ?, NULL)", verb.Id, lang.Id, verb.Infinitive, verb.NormalisedInfinitive, verb.English)
-			Expect(err).To(BeNil())
+			insertLang(germanLang)
+			insertTense(germanLang, germanTense)
+			insertPronoun(germanLang, germanPronoun)
+			insertVerb(germanLang, germanVerb)
 		})
 
 		AfterEach(func() {
@@ -81,16 +69,16 @@ var _ = Describe("Integration: languages", func() {
 				Expect(err).To(BeNil())
 
 				Expect(langRes.Error).To(BeEmpty())
-				Expect(langRes.Data).To(HaveLen(1))
+				Expect(langRes.Data).To(HaveLen(2))
 
 				version := langRes.Data[0].Version
 				schemaVersion := langRes.Data[0].SchemaVersion
 				Expect(int64(version)).To(BeNumerically("==", time.Now().Unix()))
 				Expect(int64(schemaVersion)).To(BeNumerically("==", time.Now().Unix()))
-				lang.Version = version
-				lang.SchemaVersion = schemaVersion
+				frenchLang.Version = version
+				frenchLang.SchemaVersion = schemaVersion
 
-				Expect(langRes.Data[0]).To(BeEquivalentTo(lang))
+				Expect(langRes.Data[0]).To(BeEquivalentTo(frenchLang))
 			})
 		})
 

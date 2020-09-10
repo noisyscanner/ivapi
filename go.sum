@@ -222,8 +222,8 @@ github.com/mwitkow/go-conntrack v0.0.0-20161129095857-cc309e4a2223/go.mod h1:qRW
 github.com/nakagami/firebirdsql v0.0.0-20190310045651-3c02a58cfed8/go.mod h1:86wM1zFnC6/uDBfZGNwB65O+pR2OFi5q/YQaEUid1qA=
 github.com/neo4j-drivers/gobolt v1.7.4/go.mod h1:O9AUbip4Dgre+CD3p40dnMD4a4r52QBIfblg5k7CTbE=
 github.com/neo4j/neo4j-go-driver v1.7.4/go.mod h1:aPO0vVr+WnhEJne+FgFjfsjzAnssPFLucHgGZ76Zb/U=
-github.com/noisyscanner/gofly v1.0.1 h1:c/CmzpJZ0+rbv+BKDPEmziS7w3QyHSjQNtBkbMuAJkQ=
-github.com/noisyscanner/gofly v1.0.1/go.mod h1:i3xudjUtqvrd2e2boXGjAj4p6DMaOQf1qkaNSp2EZGM=
+github.com/noisyscanner/gofly v1.0.3 h1:yEjg8KO7Am+3wfDKTfWJUfBQB8yyjvFd2cN33ZHLtxQ=
+github.com/noisyscanner/gofly v1.0.3/go.mod h1:i3xudjUtqvrd2e2boXGjAj4p6DMaOQf1qkaNSp2EZGM=
 github.com/nxadm/tail v1.4.4 h1:DQuhQpB1tVlglWS2hLQ5OV6B5r8aGxSrPc5Qo6uTN78=
 github.com/nxadm/tail v1.4.4/go.mod h1:kenIhsEOeOJmVchQTgglprH7qJGnHDVpk1VPCcaMI8A=
 github.com/onsi/ginkgo v1.6.0/go.mod h1:lLunBs/Ym6LB5Z9jYTR76FiuTmxDTDusOGeTQH+WWjE=
