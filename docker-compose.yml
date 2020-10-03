@@ -4,6 +4,8 @@ services:
     image: redis:latest
     ports:
       - 6379:6379
+    networks:
+      - ivapi_bridge
   api:
     build:
       context: .
@@ -18,4 +20,10 @@ services:
       - PORT=7000
     ports:
       - 7000:7000
-
+    networks:
+      - ivapi_bridge
+networks:
+  ivapi_bridge:
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: ivapi-bridge

@@ -29,6 +29,7 @@ FROM alpine:3.12 AS prod
 WORKDIR /usr/local/bin
 
 ARG ROOT=/go/src/github.com/noisyscanner/ivapi
+COPY scripts/ scripts/
 COPY --from=build $ROOT/tmp/api .
 
-CMD api
+CMD source ./scripts/dockerGetHostIp.sh && api
