@@ -10,10 +10,10 @@ services:
     depends_on:
       - redis
     environment:
-      - DB_HOST=mysql
-      - DB_USER=root
-      - DB_PASS=iverbs
-      - DB_NAME=ivapi_1
+      - DB_HOST=${DB_HOST:-mysql}
+      - DB_USER=${DB_USER:-root}
+      - DB_PASS=${DB_PASS:-iverbs}
+      - DB_NAME=${DB_NAME:-ivapi_1}
       - REDIS=redis:6379
       - PORT=7000
     ports:
