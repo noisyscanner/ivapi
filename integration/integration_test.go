@@ -101,6 +101,8 @@ var _ = Describe("Integration: languages", func() {
 				req.Header.Add("Authorization", token)
 				srv.Router.ServeHTTP(rr, req)
 
+				redisClient := redisPool.Get()
+				defer redisClient.Close()
 				_, err := redis.String(redisClient.Do("HGET", KEY, token))
 				Expect(err).To(Equal(redis.ErrNil))
 			})

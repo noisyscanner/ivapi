@@ -91,21 +91,21 @@ var opts = &options.Options{
 }
 var goflyConfig = GetTestConfig()
 
-func Setup() (*sql.DB, redis.Conn) {
+func Setup() (*sql.DB, *redis.Pool) {
 	db, err := setupTestDb(goflyConfig)
 	Expect(err).To(BeNil())
 
-	redisClient, err := server.ConnectToRedis(opts)
-	Expect(err).To(BeNil())
+	redisPool := server.ConnectToRedis(opts)
 
-	return db, redisClient
+	return db, redisPool
 }
 
-func TearDown(db *sql.DB, redisClient redis.Conn) {
+func TearDown(db *sql.DB, redisPool *redis.Pool) {
 	err := migrate.Down(goflyConfig)
 	Expect(err).To(BeNil())
 
-	redisClient.Close()
+	err = redisPool.Close()
+	Expect(err).To(BeNil())
 }
 
 func SetupServer() (srv *apihttp.Server, rr *httptest.ResponseRecorder) {

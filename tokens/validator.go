@@ -13,19 +13,22 @@ type TokenValidator interface {
 }
 
 type RedisTokenValidator struct {
-	conn redis.Conn
+	pool RedisPool
 	key  string
 }
 
-func NewRedisTokenValidator(conn redis.Conn) *RedisTokenValidator {
+func NewRedisTokenValidator(pool *redis.Pool) *RedisTokenValidator {
 	return &RedisTokenValidator{
-		conn: conn,
+		pool: pool,
 		key:  KEY, // TODO: In config?
 	}
 }
 
 func (v *RedisTokenValidator) Validate(token string) (bool, error) {
-	expiry, err := redis.String(v.conn.Do("HGET", v.key, token))
+	conn := v.pool.Get()
+	defer conn.Close()
+
+	expiry, err := redis.String(conn.Do("HGET", v.key, token))
 	if err != nil {
 		// TODO: Test
 		if err == redis.ErrNil {
@@ -41,4 +44,3 @@ func (v *RedisTokenValidator) Validate(token string) (bool, error) {
 
 	return expiryTime.After(time.Now()), nil
 }
-

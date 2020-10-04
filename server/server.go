@@ -2,6 +2,7 @@ package server
 
 import (
 	"log"
+	"time"
 
 	"github.com/gomodule/redigo/redis"
 	gofly "github.com/noisyscanner/gofly/gofly"
@@ -24,8 +25,22 @@ func connect(configService gofly.ConfigService) (fetcher *gofly.Fetcher, err err
 	return
 }
 
-func ConnectToRedis(options *options.Options) (redis.Conn, error) {
-	return redis.Dial("tcp", options.Redis)
+func ConnectToRedis(options *options.Options) *redis.Pool {
+	return &redis.Pool{
+		MaxIdle:     3,
+		IdleTimeout: 240 * time.Second,
+		Dial: func() (redis.Conn, error) {
+			c, err := redis.Dial("tcp", options.Redis)
+			if err != nil {
+				return nil, err
+			}
+			return c, err
+		},
+		TestOnBorrow: func(c redis.Conn, t time.Time) error {
+			_, err := c.Do("PING")
+			return err
+		},
+	}
 }
 
 func GetServer(opts *options.Options, goflyConfig gofly.ConfigService) (server *iverbs_http.Server) {
@@ -44,14 +59,10 @@ func GetServer(opts *options.Options, goflyConfig gofly.ConfigService) (server *
 		return
 	}
 
-	redisConn, err := ConnectToRedis(opts)
-	if err != nil {
-		log.Fatal(err)
-		return
-	}
+	redisPool := ConnectToRedis(opts)
 
-	tokenPersister := tokens.NewRedisTokenPersister(redisConn)
-	tokenValidator := tokens.NewRedisTokenValidator(redisConn)
+	tokenPersister := tokens.NewRedisTokenPersister(redisPool)
+	tokenValidator := tokens.NewRedisTokenValidator(redisPool)
 
 	return &iverbs_http.Server{
 		Port:           opts.Port,

@@ -15,17 +15,22 @@ var _ = Describe("Tokens", func() {
 	var _ = Describe("RedisTokenPersister", func() {
 		var _ = Describe("TokenPersister", func() {
 			var (
+				pool           *MockRedisPool
 				conn           *MockRedisConn
 				clockMock      *clock.Mock
 				tokenGenerator *RedisTokenPersister
 			)
 
 			BeforeEach(func() {
+				pool = new(MockRedisPool)
 				conn = new(MockRedisConn)
 				clockMock = clock.NewMock()
 
+				pool.On("Get").Return(conn)
+				conn.On("Close").Return(nil) // TODO: Test failure
+
 				tokenGenerator = &RedisTokenPersister{
-					conn:  conn,
+					pool:  pool,
 					clock: clockMock,
 				}
 			})

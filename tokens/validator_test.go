@@ -10,13 +10,18 @@ import (
 
 var _ = Describe("Tokens", func() {
 	var _ = Describe("RedisTokenValidator", func() {
+		var pool *MockRedisPool
 		var conn *MockRedisConn
 		var redisTokenValidator *RedisTokenValidator
 
 		BeforeEach(func() {
+			pool = new(MockRedisPool)
 			conn = new(MockRedisConn)
+			pool.On("Get").Return(conn)
+			conn.On("Close").Return(nil) // TODO: Test failure
+
 			redisTokenValidator = &RedisTokenValidator{
-				conn: conn,
+				pool: pool,
 				key:  KEY,
 			}
 		})

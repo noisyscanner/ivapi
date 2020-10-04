@@ -17,18 +17,18 @@ func TestIntegration(t *testing.T) {
 }
 
 var (
-	srv         *apihttp.Server
-	rr          *httptest.ResponseRecorder
-	redisClient redis.Conn
-	db          *sql.DB
+	srv       *apihttp.Server
+	rr        *httptest.ResponseRecorder
+	redisPool *redis.Pool
+	db        *sql.DB
 )
 
 var _ = Describe("Setup", func() {
 	BeforeSuite(func() {
-		db, redisClient = Setup()
+		db, redisPool = Setup()
 	})
 
 	AfterSuite(func() {
-		TearDown(db, redisClient)
+		TearDown(db, redisPool)
 	})
 })

@@ -26,6 +26,8 @@ var _ = Describe("Integration: tokens", func() {
 
 			Expect(tokenRes.Error).To(BeEmpty())
 
+			redisClient := redisPool.Get()
+			defer redisClient.Close()
 			expiryStr, err := redis.String(redisClient.Do("HGET", KEY, tokenRes.Token))
 			Expect(err).To(BeNil())
 

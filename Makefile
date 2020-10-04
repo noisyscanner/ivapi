@@ -9,7 +9,7 @@ docker-dev-build:
 docker-dev-run:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run api /bin/sh
 docker-test:
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run api go test ./...
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run api go test -v ./...
 docker-prod:
 	docker-compose up --build
 build:
