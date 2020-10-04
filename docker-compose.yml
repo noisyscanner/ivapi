@@ -5,7 +5,7 @@ services:
     ports:
       - 6379:6379
     networks:
-      - ivapi_bridge
+      - ivapi_internal
   api:
     build:
       context: .
@@ -23,6 +23,7 @@ services:
       - 7000:7000
     networks:
       - ivapi_bridge
+      - ivapi_internal
     volumes:
       - ${CACHE_DIRECTORY_HOST}:${CACHE_DIRECTORY:-/var/ivapi/langcache}
 networks:
@@ -30,3 +31,5 @@ networks:
     driver: bridge
     driver_opts:
       com.docker.network.bridge.name: ivapi-bridge
+  ivapi_internal:
+    driver: bridge
