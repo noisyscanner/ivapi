@@ -111,12 +111,7 @@ func easyjson6a975c40DecodeGithubComNoisyscannerIvapiHttp1(in *jlexer.Lexer, out
 		}
 		switch key {
 		case "receipt":
-			if in.IsNull() {
-				in.Skip()
-				out.Receipt = nil
-			} else {
-				out.Receipt = in.Bytes()
-			}
+			out.Receipt = string(in.String())
 		default:
 			in.SkipRecursive()
 		}
@@ -134,7 +129,7 @@ func easyjson6a975c40EncodeGithubComNoisyscannerIvapiHttp1(out *jwriter.Writer, 
 	{
 		const prefix string = ",\"receipt\":"
 		out.RawString(prefix[1:])
-		out.Base64Bytes(in.Receipt)
+		out.String(string(in.Receipt))
 	}
 	out.RawByte('}')
 }
@@ -197,17 +192,17 @@ func easyjson6a975c40DecodeGithubComNoisyscannerIvapiHttp2(in *jlexer.Lexer, out
 					out.Data = (out.Data)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v4 *gofly.Language
+					var v1 *gofly.Language
 					if in.IsNull() {
 						in.Skip()
-						v4 = nil
+						v1 = nil
 					} else {
-						if v4 == nil {
-							v4 = new(gofly.Language)
+						if v1 == nil {
+							v1 = new(gofly.Language)
 						}
-						(*v4).UnmarshalEasyJSON(in)
+						(*v1).UnmarshalEasyJSON(in)
 					}
-					out.Data = append(out.Data, v4)
+					out.Data = append(out.Data, v1)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -235,14 +230,14 @@ func easyjson6a975c40EncodeGithubComNoisyscannerIvapiHttp2(out *jwriter.Writer, 
 			out.RawString("null")
 		} else {
 			out.RawByte('[')
-			for v5, v6 := range in.Data {
-				if v5 > 0 {
+			for v2, v3 := range in.Data {
+				if v2 > 0 {
 					out.RawByte(',')
 				}
-				if v6 == nil {
+				if v3 == nil {
 					out.RawString("null")
 				} else {
-					(*v6).MarshalEasyJSON(out)
+					(*v3).MarshalEasyJSON(out)
 				}
 			}
 			out.RawByte(']')

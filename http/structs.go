@@ -24,5 +24,5 @@ type IapResponse struct {
 }
 
 type ReceiptBody struct {
-	Receipt []byte
+	Receipt string `json:"receipt"`
 }
