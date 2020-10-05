@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
+	"log"
 	"net/http"
 )
 
@@ -47,24 +49,27 @@ func (v *IapValidator) validateIapToken(receipt []byte, isSandbox bool) (isValid
 	}
 	jsonPayload, err := json.Marshal(payload)
 	if err != nil {
+		log.Print("Could not encode App Store request body", err)
 		return
 	}
 
 	url := getItunesUrl(isSandbox)
 	res, err := v.Client.Post(url, "application/json", bytes.NewReader(jsonPayload))
 	if err != nil {
+		log.Print("Request to App Store failed", err)
 		return
 	}
 
-	body := make([]byte, res.ContentLength)
-	_, err = res.Body.Read(body)
+	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
+		log.Print("Could not read App Store response", err)
 		return
 	}
 
 	resJson := &AppStoreResponse{}
 	err = json.Unmarshal(body, resJson)
 	if err != nil {
+		log.Print("Could not unmarshal App Store response", err)
 		return
 	}
 
