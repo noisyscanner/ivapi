@@ -22,3 +22,7 @@ type IapResponse struct {
 	Success bool
 	Error   string `json:"error,omitempty"`
 }
+
+type ReceiptBody struct {
+	Receipt []byte
+}

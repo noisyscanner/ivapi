@@ -42,8 +42,8 @@ func getItunesUrl(isSandbox bool) string {
 }
 
 func (v *IapValidator) validateIapToken(receipt []byte, isSandbox bool) (isValid bool, err error) {
-	payload := map[string][]byte{
-		"receipt-data": receipt,
+	payload := map[string]string{
+		"receipt-data": string(receipt),
 	}
 	jsonPayload, err := json.Marshal(payload)
 	if err != nil {

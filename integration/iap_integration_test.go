@@ -3,9 +3,11 @@ package integration
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 
 	apihttp "github.com/noisyscanner/ivapi/http"
 	. "github.com/onsi/ginkgo"
@@ -55,6 +57,11 @@ var _ = Describe("Integration: tokens", func() {
 
 	Describe("POST /iapvalidate", func() {
 		receipt := []byte("sdfsf")
+		receiptBody := &apihttp.ReceiptBody{
+			Receipt: receipt,
+		}
+		receiptBodyStr, _ := receiptBody.MarshalJSON()
+		expectedAppleBody := []byte(fmt.Sprintf(`{"receipt-data":"%s"}`, receipt))
 		var token string
 
 		BeforeEach(func() {
@@ -67,12 +74,18 @@ var _ = Describe("Integration: tokens", func() {
 					"Post",
 					"https://buy.itunes.apple.com/verifyReceipt",
 					"application/json",
-					mock.Anything,
+					mock.MatchedBy(func(reader io.Reader) bool {
+						body, err := ioutil.ReadAll(reader)
+						return err == nil && bytes.Equal(body, expectedAppleBody)
+					}),
 				).
-				Return(successResponse(), nil)
+				Return(successResponse(), nil).
+				Once()
 
-			req, _ := http.NewRequest("POST", "/iapvalidate", bytes.NewReader(receipt))
+			req, _ := http.NewRequest(http.MethodPost, "/iapvalidate", bytes.NewReader(receiptBodyStr))
 			req.Header.Set("Authorization", token)
+			req.Header.Set("Content-Type", "application/json")
+			req.Header.Set("Content-Length", strconv.Itoa(len(receiptBodyStr)))
 			srv.Router.ServeHTTP(rr, req)
 
 			iapRes := &apihttp.IapResponse{}
@@ -89,7 +102,10 @@ var _ = Describe("Integration: tokens", func() {
 					"Post",
 					"https://buy.itunes.apple.com/verifyReceipt",
 					"application/json",
-					mock.Anything,
+					mock.MatchedBy(func(reader io.Reader) bool {
+						body, err := ioutil.ReadAll(reader)
+						return err == nil && bytes.Equal(body, expectedAppleBody)
+					}),
 				).
 				Return(sandBoxResponse(), nil)
 
@@ -98,11 +114,11 @@ var _ = Describe("Integration: tokens", func() {
 					"Post",
 					"https://sandbox.itunes.apple.com/verifyReceipt",
 					"application/json",
-					mock.Anything,
+					mock.Anything, // anything as we can't read from a reader twice
 				).
 				Return(successResponse(), nil)
 
-			req, _ := http.NewRequest("POST", "/iapvalidate", bytes.NewReader(receipt))
+			req, _ := http.NewRequest("POST", "/iapvalidate", bytes.NewReader(receiptBodyStr))
 			req.Header.Set("Authorization", token)
 			srv.Router.ServeHTTP(rr, req)
 

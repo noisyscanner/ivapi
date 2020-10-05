@@ -1,6 +1,8 @@
 package http
 
 import (
+	json "encoding/json"
+	"io/ioutil"
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
@@ -9,15 +11,22 @@ import (
 func iapValidate(s *Server) httprouter.Handle {
 	return jsonRoute(s.authMiddleware(func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 		var (
-			receipt []byte
-			success bool
-			err     error
-			errStr  string
+			body        []byte
+			receiptBody *ReceiptBody
+			success     bool
+			err         error
+			errStr      string
 		)
-		_, err = r.Body.Read(receipt)
+		receiptBody = &ReceiptBody{}
+
+		body, err = ioutil.ReadAll(r.Body)
 
 		if err == nil {
-			success, err = s.ReceiptValidator.ValidateIapToken(receipt)
+			err = json.Unmarshal(body, receiptBody)
+		}
+
+		if err == nil {
+			success, err = s.ReceiptValidator.ValidateIapToken(receiptBody.Receipt)
 		}
 
 		if err != nil {
