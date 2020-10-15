@@ -24,8 +24,10 @@ services:
     networks:
       - ivapi_bridge
       - ivapi_internal
+    restart: on-failure
     volumes:
       - ${CACHE_DIRECTORY_HOST}:${CACHE_DIRECTORY:-/var/ivapi/langcache}
+
 networks:
   ivapi_bridge:
     driver: bridge
