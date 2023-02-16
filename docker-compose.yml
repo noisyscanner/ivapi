@@ -7,6 +7,7 @@ services:
     networks:
       - ivapi_internal
   api:
+    image: ivapi_api:latest
     build:
       context: .
     depends_on:

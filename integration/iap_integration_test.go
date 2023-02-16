@@ -58,7 +58,7 @@ var _ = Describe("Integration: tokens", func() {
 	Describe("POST /iapvalidate", func() {
 		receipt := []byte("sdfsf")
 		receiptBody := &apihttp.ReceiptBody{
-			Receipt: receipt,
+			Receipt: string(receipt),
 		}
 		receiptBodyStr, _ := receiptBody.MarshalJSON()
 		expectedAppleBody := []byte(fmt.Sprintf(`{"receipt-data":"%s"}`, receipt))

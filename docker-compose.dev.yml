@@ -10,6 +10,7 @@ services:
     networks:
       - ivapi_internal
   api:
+    image: ivapi_api:dev
     build:
       context: .
       target: dev
@@ -17,6 +18,9 @@ services:
       - redis
       - mysql
     environment:
+      - DB_USER=root
+      - DB_PASS=iverbs
+      - DB_NAME=ivapi_1
       - MIGRATIONS_PATH=/go/pkg/mod/github.com/noisyscanner/gofly@v1.0.3/migrations
     volumes:
       - .:/go/src/github.com/noisyscanner/ivapi
