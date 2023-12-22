@@ -6,6 +6,10 @@ services:
       - 6379:6379
     networks:
       - ivapi_internal
+    volumes:
+      - "./data/redis/data:/data"
+      - "./data/redis/config:/conf"
+    restart: unless-stopped
   api:
     image: ivapi_api:latest
     build:
